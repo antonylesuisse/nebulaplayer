@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim:fdl=1:
+-->
+<templates id="template" xml:space="preserve">
+<t t-name="EmptyComponent">
+    <div></div>
+</t>
+<t t-name="Loading">
+    <div class="oe_loading">
+        Loading...
+    </div>
+</t>
+<t t-name="Notification">
+    <div class="oe_notification" t-translation="off">
+        <div id="oe_notification_default">
+            <a class="ui-notify-cross ui-notify-close" href="#">x</a>
+            <h1>#{title}</h1>
+            <p>#{text}</p>
+        </div>
+        <div id="oe_notification_alert" class="ui-state-error">
+            <a class="ui-notify-cross ui-notify-close" href="#">x</a>
+            <span style="float:left; margin:2px 5px 0 0;" class="ui-icon ui-icon-alert"></span>
+            <h1>#{title}</h1>
+            <p>#{text}</p>
+        </div>
+    </div>
+</t>
+<t t-name="Tipsy.alert">
+    <a class="oe_tooltip_close oe_e">[</a>
+    <span style="float:left; margin:2px 5px 0 0;" class="ui-icon ui-icon-alert ui-state-error"></span>
+    <div class="oe_tooltip_message">
+        <t t-esc="message"/>
+    </div>
+</t>
+
+<t t-name="CrashManager.warning">
+    <table cellspacing="0" cellpadding="0" border="0" class="oe_dialog_warning">
+    <tr>
+        <td><img t-att-src='_s + "/web/static/src/img/warning.png"' class="oe_dialog_icon"/></td>
+        <td>
+            <p>
+                <t t-js="d">
+                    var message = d.message ? d.message : d.error.data.fault_code;
+                    d.html_error = context.engine.tools.html_escape(message)
+                        .replace(/\n/g, '<br/>');
+                </t>
+                <t t-raw="html_error"/>
+            </p>
+        </td>
+    </tr>
+    </table>
+</t>
+<t t-name="CrashManager.error">
+    <div class="oe_error_detail">
+        <pre><t t-esc="error.message"/></pre>
+        <hr/>
+        <pre><t t-esc="error.data.debug"/></pre>
+    </div>
+</t>
+
+<t t-name="Login">
+    <div class="oe_login">
+        <div class="oe_login_bottom"> </div>
+        <div class="oe_login_error_message">Invalid username or password</div>
+        <div class="oe_login_pane">
+            <div class="oe_login_logo"><img src='/web/static/src/img/logo2.png'/></div>
+            <form action="" method="post">
+                <div class="oe_login_dbpane" >
+                    Database:
+                    <input name="db" t-att-value="widget.selected_db || ''"/>
+                </div>
+                <ul>
+                    <li>Username</li>
+                    <li><input type="text" name="login" t-att-value="widget.selected_login || ''" autofocus="autofocus"/></li>
+                    <li>Password</li>
+                    <li><input type="password" name="password" t-att-value="widget.selected_password || ''"/></li>
+                    <li><button name="submit">Log in</button></li>
+                </ul>
+            </form>
+            <div class="oe_login_footer">
+                <a href="#" class="oe_login_manage_db">Manage Databases</a> |
+                <a href="http://www.openerp.com">Powered by <span>OpenERP</span></a>
+            </div>
+        </div>
+    </div>
+</t>
+<t t-name="Login.dblist">
+    <select name="db">
+        <t t-foreach="db_list" t-as="db">
+            <t t-if="selected_db === db">
+                <option t-att-value="db" selected="true">
+                    <t t-esc="db"/></option>
+            </t>
+            <t t-if="selected_db !== db">
+                <option t-att-value="db"><t t-esc="db"/></option>
+            </t>
+        </t>
+    </select>
+</t>
+
+<t t-name="ChangePassword">
+    <form name="change_password_form" method="POST">
+        <table align="center">
+            <tr>
+                <td><label for="old_pwd">Old Password:</label></td>
+                <td><input type="password" name="old_pwd"
+                           minlength="1" autofocus="autofocus"/></td>
+            </tr>
+            <tr>
+            <td><label for="new_password">New Password:</label></td>
+            <td><input type="password" name="new_password"
+                       minlength="1"/></td>
+            </tr>
+            <tr>
+                <td><label for="confirm_pwd">Confirm Password:</label></td>
+                <td><input type="password" name="confirm_pwd"
+                             minlength="1"/></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="right"><button class="oe_button">Change Password</button></td>
+            </tr>
+        </table>
+    </form>
+</t>
+
+<t t-name="WebClient">
+    <div class="openerp openerp_webclient_container">
+    <table class="oe_webclient">
+        <tr>
+            <td colspan="2" class="oe_topbar">
+                <div class="oe_menu_placeholder"/>
+                <div class="oe_user_menu_placeholder"/>
+                <div class="oe_systray"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="oe_leftbar" valign="top">
+                <t t-js="d">
+                    d.url = '/' + (window.location.search || '');
+                </t>
+                <a t-att-href="url" class="oe_logo"><img t-att-src='_s + "/web/static/src/img/logo.png"'/></a>
+                <div class="oe_secondary_menus_container"/>
+                <div class="oe_footer">
+                    Powered by <a href="http://www.openerp.com"><span>Open</span>ERP</a>
+                </div>
+            </td>
+            <td class="oe_application">
+            </td>
+        </tr>
+    </table>
+    </div>
+</t>
+
+<t t-name="EmbedClient">
+    <div class="openerp">
+        <div class="oe_application"></div>
+    </div>
+</t>
+
+<t t-name="ViewManager">
+    <div class="oe_view_manager">
+        <table class="oe_view_manager_header">
+            <col width="20%"/>
+            <col width="25%"/>
+            <col width="20%"/>
+            <col width="35%"/>
+            <tr class="oe_header_row oe_header_row_top">
+                <td colspan="2">
+                        <h2 class="oe_view_title" t-if="widget.flags.display_title !== false">
+                            <span class="oe_view_title_text oe_breadcrumb_title"/>
+                        </h2>
+                </td>
+                <td colspan="2">
+                        <div class="oe_view_manager_view_search" t-opentag="true"/>
+                </td>
+            </tr>
+            <tr class="oe_header_row">
+                <td>
+                        <div class="oe_view_manager_buttons"/>
+                </td>
+                <td colspan="2">
+                        <div class="oe_view_manager_sidebar"/>
+                </td>
+                <td>
+                    <ul class="oe_view_manager_switch oe_button_group oe_right">
+                        <t t-if="widget.views_src.length > 1" t-foreach="widget.views_src" t-as="view">
+                          <li class="oe_e"><a t-attf-class="oe_vm_switch_#{view.view_type}" t-att-data-view-type="view.view_type" t-att-title="_t('Switch to ') + (view.label || view.view_type)">
+                            </a></li>
+                        </t>
+                    </ul>
+                    <div class="oe_view_manager_pager oe_right"/>
+                </td>
+            </tr>
+        </table>
+
+        <div class="oe_view_manager_body">
+            <t t-foreach="widget.views_src" t-as="view">
+                <div t-attf-class="oe_view_manager_view_#{view.view_type}"/>
+            </t>
+        </div>
+    </div>
+</t>
+
+<t t-name="ViewManagerAction" t-extend="ViewManager">
+    <t t-jquery="h2.oe_view_title" t-operation="before">
+        <select t-if="widget.session.debug" class="oe_debug_view"/>
+    </t>
+</t>
+<t t-name="ViewManagerDebug">
+    <option value="">Debug View#<t t-esc="view.fields_view.view_id"/></option>
+    <option t-if="view_manager.active_view === 'form'" value="perm_read" data-views="form,page">View Log (perm_read)</option>
+    <option t-if="view_manager.active_view === 'form'" value="toggle_layout_outline">Toggle Form Layout Outline</option>
+    <option value="fields">View Fields</option>
+    <option value="fvg">Fields View Get</option>
+    <option value="manage_filters">Manage Filters</option>
+    <t t-if="view_manager.session.uid === 1">
+        <option value="manage_views">Manage Views</option>
+        <option value="edit" data-model="ir.ui.view" t-att-data-id="view.fields_view.view_id">Edit <t t-esc="_.str.capitalize(view.fields_view.type)"/>View</option>
+        <option t-if="view_manager.searchview" value="edit" data-model="ir.ui.view" t-att-data-id="view_manager.searchview.view_id">Edit SearchView</option>
+        <option t-if="view_manager.action" value="edit" t-att-data-model="view_manager.action.type" t-att-data-id="view_manager.action.id">Edit Action</option>
+        <option value="edit_workflow">Edit Workflow</option>
+    </t>
+</t>
+<t t-name="ViewManagerDebugViewLog">
+    <div class="oe_debug_view_log">
+        <label>ID:</label>
+        <span><t t-esc="perm.id"/></span>
+
+        <label>XML ID:</label>
+        <span><t t-esc="perm.xmlid"/></span>
+
+        <label>Creation User:</label>
+        <span><t t-esc="format(perm.create_uid, { 'type' : 'many2one' }, '/')"/></span>
+
+        <label>Creation Date:</label>
+        <span><t t-esc="format(perm.create_date, { 'type' : 'datetime' }, '/')"/></span>
+
+        <label>Latest Modification by:</label>
+        <span><t t-esc="format(perm.write_uid, { 'type' : 'many2one' }, '/')"/></span>
+
+        <label>Latest Modification Date:</label>
+        <span><t t-esc="format(perm.write_date, { 'type' : 'datetime' }, '/')"/></span>
+    </div>
+</t>
+<t t-name="ViewPager">
+    <div class="oe_pager_value">
+        <t t-raw="__content__"/>
+    </div>
+    <ul class="oe_pager_group">
+        <!--
+        <button class="oe_button oe_button_pager" type="button" data-pager-action="first">
+            <img t-att-src='_s + "/web/static/src/img/pager_first.png"'/>
+        </button>
+        -->
+        <li>
+            <a class="oe_i" type="button" data-pager-action="previous">(</a>
+        </li>
+        <li>
+            <a class="oe_i" type="button" data-pager-action="next">)</a>
+        </li>
+        <!--
+        <button class="oe_button oe_button_pager" type="button" data-pager-action="last">
+            <img t-att-src='_s + "/web/static/src/img/pager_last.png"'/>
+        </button>
+        -->
+    </ul>
+</t>
+
+<t t-name="Sidebar">
+    <div class="oe_sidebar">
+        <t t-foreach="widget.sections" t-as="section">
+            <div class="oe_form_dropdown_section">
+                <button class="oe_dropdown_toggle oe_dropdown_arrow">
+                    <t t-if="section.name == 'files'" t-raw="widget.items[section.name].length || ''"/>
+                    <t t-esc="section.label"/>
+                </button>
+                <ul class="oe_dropdown_menu">
+                    <li t-foreach="widget.items[section.name]" t-as="item" t-att-class="item.classname">
+                        <a class="oe_sidebar_action_a" t-att-title="item.title" t-att-data-section="section.name" t-att-data-index="item_index" t-att-href="item.url" target="_blank">
+                            <t t-raw="item.label"/>
+                        </a>
+                        <a t-if="section.name == 'files'" class="oe_sidebar_delete_item" t-att-data-id="item.id" title="Delete this attachment">x</a>
+                    </li>
+                    <li t-if="section.name == 'files'" class="oe_sidebar_add_attachment">
+                        <t t-call="HiddenInputFile">
+                            <t t-set="fileupload_id" t-value="widget.fileupload_id"/>
+                            <t t-set="fileupload_action">/web/binary/upload_attachment</t>
+                            <input type="hidden" name="model" t-att-value="widget.dataset and widget.dataset.model"/>
+                            <input type="hidden" name="id" t-att-value="widget.model_id"/>
+                            <input type="hidden" name="session_id" t-att-value="widget.session.session_id"/>
+                            <span>Add...</span>
+                        </t>
+                    </li>
+                </ul>
+            </div>
+        </t>
+    </div>
+</t>
+
+<t t-name="TreeView">
+    <div class = "tree_header">
+         <select t-if="toolbar" ></select>
+         <button id = "tree_view_collapse">Collapse All</button>
+         <button id = "tree_view_expand">Expand All</button>
+     </div>
+    <table class="oe-treeview-table">
+        <thead>
+            <tr>
+                <th t-foreach="fields_view" t-as="field"
+                    t-if="!field.attrs.modifiers.tree_invisible">
+                    <t t-esc="fields[field.attrs.name].string" />
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</t>
+<tr t-name="TreeView.rows"
+        t-foreach="records" t-as="record"
+        t-att-id="'treerow_' + record.id"
+        t-att-data-id="record.id" t-att-data-level="level">
+    <t t-set="children" t-value="record[children_field]"/>
+    <t t-set="class" t-value="children and children.length ? 'treeview-tr' : 'treeview-td'"/>
+    <t t-set="rank" t-value="'oe-treeview-first'"/>
+    <t t-set="style" t-value="'background-position: ' + 19*(level-1) + 'px; padding-left: ' + 19*(level-1) + 'px;'"/>
+
+    <td t-foreach="fields_view" t-as="field"
+        t-if="!field.attrs.modifiers.tree_invisible"
+        t-att-data-id="record.id"
+        t-att-style="color_for(record) + style "
+        t-attf-class="#{class} #{rank} #{(fields[field.attrs.name].type === 'float') or (fields[field.attrs.name].type === 'integer') ? 'oe_number' : ''}">
+
+        <span t-if="!field.attrs.modifiers.invisible" >
+            <t t-esc="render(record[field.attrs.name], fields[field.attrs.name])" />
+        </span>
+
+        <t t-set="class" t-value="'treeview-td'"/>
+        <t t-set="rank" t-value="''"/>
+        <t t-set="style" t-value="''"/>
+    </td>
+</tr>
+
+<t t-name="AbstractFormPopup.render">
+    <div>
+        <table style="width:100%">
+            <tr style="width:100%">
+                <td style="width:100%">
+                    <div class="oe_popup_search" style="width:100%"></div>
+                </td>
+            </tr>
+            <tr style="width:100%">
+                <td style="width:100%">
+                    <div class="oe_popup_list" style="width:100%"></div>
+                </td>
+            </tr>
+        </table>
+        <div class="oe_popup_form" style="width:100%"></div>
+    </div>
+</t>
+<t t-name="SelectCreatePopup.search.buttons">
+    <t t-if="! widget.options.disable_multiple_selection">
+        <button type="button" class="oe_button oe_selectcreatepopup-search-select" disabled="disabled">Select</button>
+        or
+    </t>
+    <a class="oe_button oe_selectcreatepopup-search-close oe_bold oe_form_button_cancel" href="javascript:void(0)">Cancel</a>
+</t>
+<t t-name="AbstractFormPopup.buttons">
+    <t t-if="! readonly">
+        <t t-if="! multi_select">
+            <button type="button" class="oe_button oe_abstractformpopup-form-save oe_highlight">Save</button>
+        </t>
+        <t t-if="multi_select">
+            <button type="button" class="oe_button oe_abstractformpopup-form-save-new oe_highlight">Save &amp; New</button>
+            <button type="button" class="oe_button oe_abstractformpopup-form-save oe_highlight">Save &amp; Close</button>
+        </t>
+        or
+    </t>
+    <a class="oe_button oe_abstractformpopup-form-close oe_bold oe_form_button_cancel" href="javascript:void(0)">
+        <t t-if="! readonly">
+            Discard
+        </t>
+        <t t-if="readonly">
+            Close
+        </t>
+    </a>
+</t>
+
+<div t-name="SearchView" class="oe_searchview">
+    <div class="oe_searchview_facets"/>
+    <div class="oe_searchview_clear"/>
+    <div class="oe_searchview_unfold_drawer" title="Advanced Search..."/>
+    <div class="oe_searchview_drawer"/>
+    <button type="button" class="oe_searchview_search"
+            title="Search Again">Search</button>
+</div>
+
+<div t-name="SearchView.InputView"
+     class="oe_searchview_input"
+     contenteditable="true"/>
+<!-- tabindex: makes div focusable -->
+<div t-name="SearchView.FacetView"
+     class="oe_tag oe_tag_dark oe_searchview_facet"
+     tabindex="0"
+    ><span class="oe_facet_remove">x</span
+    ><span class="oe_facet_category oe_i" t-if="widget.model.has('icon')">
+        <t t-esc="widget.model.get('icon')"/>
+    </span
+    ><span class="oe_facet_category" t-if="!widget.model.has('icon')">
+        <t t-esc="widget.model.get('category')"/>
+    </span ><span class="oe_facet_values"
+/></div>
+<span t-name="SearchView.FacetView.Value" class="oe_facet_value">
+    <t t-esc="widget.model.get('label')"/>
+</span>
+<t t-name="SearchView.managed-filters">
+    <option class="oe_search_filters_title" value="">Filters</option>
+    <optgroup label="-- Filters --">
+        <t t-foreach="filters" t-as="filter">
+            <option t-attf-value="get:#{filter_index}"
+                    t-att-disabled="filter.disabled and 'disabled'"
+                    t-att-title="filter.disabled and disabled_filter_message">
+                <t t-esc="filter.name"/>
+            </option>
+        </t>
+    </optgroup>
+    <optgroup label="-- Actions --">
+        <option value="advanced_filter">Add Advanced Filter</option>
+        <option value="save_filter">Save Filter</option>
+        <option value="manage_filters">Manage Filters</option>
+    </optgroup>
+</t>
+<t t-name="SearchView.managed-filters.add">
+    <div>
+        <p>Filter Name:</p>
+        <input type="text"/>
+        <p>(Any existing filter with the same name will be replaced)</p>
+    </div>
+</t>
+<t t-name="SearchView.render_lines">
+    <table class="oe_search_render_line" border="0" cellspacing="0" cellpadding="0"
+           t-foreach="lines" t-as="line">
+        <tr>
+            <td t-foreach="line" t-as="widget" class="oe_searchview_field">
+                <t t-raw="widget.render(defaults)"/>
+            </td>
+        </tr>
+    </table>
+</t>
+<button t-name="SearchView.filter" type="button"
+        t-att-id="element_id"
+        t-att-title="attrs.help"
+        t-att-class="classes.join(' ')"
+        t-att-style="style"
+        t-att-autofocus="attrs.default_focus === '1' ? 'autofocus' : undefined">
+    <img t-att-src="_s + '/web/static/src/img/icons/' + (attrs.icon || 'gtk-home') + '.png'" width="16" height="16"/>
+    <br t-if="attrs.string"/>
+    <t t-esc="attrs.string"/>
+</button>
+<ul t-name="SearchView.filters">
+    <li t-foreach="widget.filters" t-as="filter"
+            t-att-title="filter.attrs.string ? filter.attrs.help : undefined">
+        <t t-esc="filter.attrs.string or filter.attrs.help or filter.attrs.name or 'Ω'"/>
+    </li>
+</ul>
+<t t-name="SearchView.filters.facet">
+    <div class="category oe_filter_category"><t t-esc="facet.get('category')"/></div>
+
+    <t t-set="val" t-value="facet.get('json')"/>
+
+    <div t-if="!(val instanceof Array)" class="search_facet_input_container">
+        <t t-esc="facet.get('value')"/>
+    </div>
+    <t t-if="val instanceof Array">
+        <div class="search_facet_input_container"
+                t-foreach="facet.get('json')" t-as="filter">
+            <t t-esc="filter.attrs.string || filter.attrs.name"/>
+        </div>
+    </t>
+
+    <div class="search_facet_remove VS-icon VS-icon-cancel"/>
+</t>
+<t t-name="SearchView.field">
+    <label t-att-class="'oe_label' + (attrs.help ? '_help' : '')"
+           t-att-title="attrs.help"
+           t-att-for="element_id"
+           t-att-style="style">
+        <t t-esc="attrs.string || attrs.name"/>
+        <span t-if="attrs.help">?</span>
+    </label>
+    <div t-att-style="style">
+        <input type="text" size="15" t-att-name="attrs.name"
+               t-att-autofocus="attrs.default_focus === '1' ? 'autofocus' : undefined"
+               t-att-id="element_id"
+               t-att-value="defaults[attrs.name] || ''"/>
+        <t t-if="filters.length" t-raw="filters.render(defaults)"/>
+    </div>
+</t>
+<t t-name="SearchView.date">
+    <label t-att-class="'oe_label' + (attrs.help ? '_help' : '')"
+           t-att-title="attrs.help"
+           t-att-for="element_id"
+           t-att-style="style">
+        <t t-esc="attrs.string || attrs.name"/>
+        <span t-if="attrs.help">?</span>
+    </label>
+    <div t-att-style="style">
+        <span t-att-id="element_id"/>
+        <t t-if="filters.length" t-raw="filters.render(defaults)"/>
+    </div>
+</t>
+<t t-name="SearchView.field.selection">
+    <label t-att-title="attrs.help"
+           t-att-class="'oe_label' + (attrs.help ? '_help' : '')"
+           t-att-for="element_id"
+           t-att-style="style">
+        <t t-esc="attrs.string || attrs.name"/>
+        <span t-if="attrs.help">?</span>
+    </label>
+    <div t-att-style="style">
+        <select t-att-name="attrs.name" t-att-id="element_id"
+                t-att-autofocus="attrs.default_focus === '1' || undefined">
+            <option t-if="prepend_empty"/>
+            <t t-foreach="attrs.selection" t-as="option">
+                <t t-set="selected" t-value="defaults[attrs.name] === option[0]"/>
+                <option t-if="selected"
+                        t-attf-selected="selected"
+                        t-att-value="option_index">
+                    <t t-esc="option[1]"/>
+                </option>
+                <option t-if="!selected" t-att-value="option_index">
+                    <t t-esc="option[1]"/>
+                </option>
+            </t>
+        </select>
+        <t t-if="filters.length" t-raw="filters.render(defaults)"/>
+    </div>
+</t>
+<t t-name="SearchView.util.expand">
+    <div t-att-class="'searchview_group ' + (expand == '0' ? 'folded' : 'expanded')">
+        <a t-if="label" class="searchview_group_string" href="#">
+            <t t-esc="label"/>
+        </a>
+        <div class="searchview_group_content">
+            <t t-raw="content"/>
+        </div>
+    </div>
+</t>
+<t t-name="SearchView.group">
+    <t t-call="SearchView.util.expand">
+        <t t-set="expand" t-value="attrs.expand"/>
+        <t t-set="label" t-value="attrs.string"/>
+        <t t-set="content">
+            <t t-call="SearchView.render_lines"/>
+        </t>
+    </t>
+</t>
+<div t-name="SearchView.Filters" class="oe_searchview_filters oe_searchview_section">
+
+</div>
+<div t-name="SearchView.CustomFilters" class="oe_searchview_custom oe_searchview_section">
+    <div>
+        <h3><span class="oe_i">M</span> Custom Filters</h3>
+        <ul class="oe_searchview_custom_list"/>
+        <div class="oe_searchview_custom">
+          <h4>Save current filter</h4>
+          <form>
+            <p><input id="oe_searchview_custom_input" placeholder="Filter name"/></p>
+            <p><input id="oe_searchview_custom_public" type="checkbox"/>
+              <label for="oe_searchview_custom_public">Share with all users</label></p>
+            <button>Save</button>
+          </form>
+        </div>
+    </div>
+    <div>
+    </div>
+</div>
+
+<div t-name="SearchView.advanced" class="oe_searchview_advanced">
+    <h4>Advanced Search</h4>
+    <form>
+        <ul>
+
+        </ul>
+        <button class="oe_add_condition button" type="button">Add a condition</button><br/>
+        <button class="oe_apply" type="submit">Apply</button>
+    </form>
+</div>
+<t t-name="SearchView.extended_search.proposition">
+    <li>
+        <select class="searchview_extended_prop_field">
+            <t t-foreach="widget.attrs.fields" t-as="field">
+                <option t-att="{'selected': field === widget.attrs.selected ? 'selected' : null}"
+                        t-att-value="field.name">
+                    <t t-esc="field.string"/>
+                </option>
+            </t>
+        </select>
+        <select class="searchview_extended_prop_op"/>
+        <span class="searchview_extended_prop_value"/>
+        <a class="searchview_extended_delete_prop button">x</a>
+    </li>
+</t>
+<t t-name="SearchView.extended_search.proposition.char">
+    <input class="field_char"/>
+</t>
+<t t-name="SearchView.extended_search.proposition.empty">
+    <span/>
+</t>
+<t t-name="SearchView.extended_search.proposition.integer">
+    <input type="number" class="field_integer" step="1"/>
+</t>
+<t t-name="SearchView.extended_search.proposition.float">
+    <input type="number" class="field_float" step="0.01"/>
+</t>
+<t t-name="SearchView.extended_search.proposition.selection">
+    <select>
+        <t t-foreach="widget.field.selection" t-as="element">
+        <option t-att-value="element[0]"><t t-esc="element[1]"/></option>
+        </t>
+    </select>
+</t>
+
+<t t-name="Throbber">
+    <div>
+        <div class="oe_blockui_spin" style="height: 50px">
+        </div>
+        <br />
+        <div class="oe_throbber_message" style="color:white"></div>
+    </div>
+</t>
+</templates>

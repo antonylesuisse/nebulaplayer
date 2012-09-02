@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+import nebula
+import logging.config
+import optparse
+import os
+import sys
+import tempfile
+
+import werkzeug.serving
+import werkzeug.contrib.fixers
+
+_logger = logging.getLogger(__name__)
+
+optparser = optparse.OptionParser()
+optparser.add_option("-p", "--port", dest="socket_port", default=8090, help="listening port", type="int", metavar="NUMBER")
+optparser.add_option("-s", "--session-path", dest="session_storage", default=os.path.join(tempfile.gettempdir(), "nebula-sessions"), help="Directory used for session storage", metavar="DIR")
+optparser.add_option('--multi-threaded', dest='threaded', default=False, action='store_true', help="Spawn one thread per HTTP request")
+optparser.add_option('--proxy-mode', dest='proxy_mode', default=False, action='store_true', help="Enable correct behavior when behind a reverse proxy")
+optparser.add_option("--log-level", dest="log_level", type="choice", default='debug', help="Global logging level", metavar="LOG_LEVEL", choices=['debug', 'info', 'warning', 'error', 'critical'])
+
+if __name__ == "__main__":
+    (options, args) = optparser.parse_args(sys.argv[1:])
+
+    options.addons_path = []
+    path_root = os.path.dirname(os.path.abspath(__file__))
+    options.addons_path.append(path_root)
+
+    for path_addons in options.addons_path:
+        if path_addons not in sys.path:
+            sys.path.insert(0, path_addons)
+
+    os.environ["TZ"] = "UTC"
+
+    logging.basicConfig(level=getattr(logging, options.log_level.upper()))
+
+    app = nebula.http.Root(options)
+
+    if options.proxy_mode:
+        app = werkzeug.contrib.fixers.ProxyFix(app)
+
+    werkzeug.serving.run_simple( '0.0.0.0', options.socket_port, app, threaded=options.threaded)
+
+# vim:et:ts=4:sw=4:
