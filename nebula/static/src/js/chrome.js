@@ -496,6 +496,9 @@ instance.web.WebClient = instance.web.Client.extend({
         var self = this;
         console.log("Hello");
 
+        var player = Player.fromURL('http://localhost:8090/nebula/static/smp_dpintro.wav');
+        player.play();
+
         return $.when(this._super()).pipe(function() {
             if (jQuery.param !== undefined && jQuery.deparam(jQuery.param.querystring()).kitten !== undefined) {
                 $("body").addClass("kitten-mode-activated");

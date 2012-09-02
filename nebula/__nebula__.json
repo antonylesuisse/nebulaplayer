@@ -22,6 +22,7 @@
         "static/lib/backbone/backbone.js",
         "static/lib/cleditor/jquery.cleditor.js",
         "static/lib/qweb/qweb2.js",
+        "static/lib/aurorajs/aurora.js",
         "static/src/js/boot.js",
         "static/src/js/corelib.js",
         "static/src/js/coresetup.js",
