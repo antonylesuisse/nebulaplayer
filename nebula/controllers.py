@@ -167,8 +167,8 @@ def module_topological_sort(modules):
 
 def module_installed(req):
     # Candidates module the current heuristic is the /static dir
-    loadable = http.addons_manifest.keys()
-    modules = {}
+    loadable = [(k,v['depends']) for k,v in http.addons_manifest.items()]
+    modules = dict(loadable)
     sorted_modules = module_topological_sort(modules)
     return sorted_modules
 
@@ -252,7 +252,7 @@ def manifest_glob(req, addons, key):
 
 def manifest_list(req, mods, extension):
     if not req.debug:
-        path = '/web/webclient/' + extension
+        path = '/nebula/' + extension
         if mods is not None:
             path += '?mods=' + mods
         return [path]
@@ -312,8 +312,7 @@ html_template = """<!DOCTYPE html>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <title>NebulaPlayer</title>
-        <link rel="shortcut icon" href="/web/static/src/img/favicon.ico" type="image/x-icon"/>
-        <link rel="stylesheet" href="/web/static/src/css/full.css" />
+        <link rel="shortcut icon" href="/nebula/static/src/img/favicon.ico" type="image/x-icon"/>
         %(css)s
         %(js)s
         <script type="text/javascript">
@@ -376,31 +375,20 @@ class Nebula(http.Controller):
 
         def reader(f):
             """read the a css file and absolutify all relative uris"""
-            with open(f, 'rb') as fp:
-                data = fp.read().decode('utf-8')
+            data = open(f, 'rb').read().decode('utf-8')
 
             path = file_map[f]
             # convert FS path into web path
             web_dir = '/'.join(os.path.dirname(path).split(os.path.sep))
 
-            data = re.sub(
-                rx_import,
-                r"""@import \1%s/""" % (web_dir,),
-                data,
-            )
+            data = re.sub( rx_import, r"""@import \1%s/""" % (web_dir,), data,)
 
-            data = re.sub(
-                rx_url,
-                r"""url(\1%s/""" % (web_dir,),
-                data,
-            )
+            data = re.sub( rx_url, r"""url(\1%s/""" % (web_dir,), data,)
             return data.encode('utf-8')
 
         content, checksum = concat_files((f[0] for f in files), reader)
 
-        return make_conditional(
-            req, req.make_response(content, [('Content-Type', 'text/css')]),
-            last_modified, checksum)
+        return make_conditional( req, req.make_response(content, [('Content-Type', 'text/css')]), last_modified, checksum)
 
     @http.httprequest
     def js(self, req, mods=None):
@@ -411,9 +399,7 @@ class Nebula(http.Controller):
 
         content, checksum = concat_js(files)
 
-        return make_conditional(
-            req, req.make_response(content, [('Content-Type', 'application/javascript')]),
-            last_modified, checksum)
+        return make_conditional( req, req.make_response(content, [('Content-Type', 'application/javascript')]), last_modified, checksum)
 
     @http.httprequest
     def qweb(self, req, mods=None):
@@ -424,9 +410,7 @@ class Nebula(http.Controller):
 
         content, checksum = concat_xml(files)
 
-        return make_conditional(
-            req, req.make_response(content, [('Content-Type', 'text/xml')]),
-            last_modified, checksum)
+        return make_conditional( req, req.make_response(content, [('Content-Type', 'text/xml')]), last_modified, checksum)
 
     @http.jsonrequest
     def modules(self, req):

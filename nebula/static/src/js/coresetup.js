@@ -399,60 +399,6 @@ instance.web.Bus = instance.web.Class.extend(instance.web.EventDispatcherMixin, 
 })
 instance.web.bus = new instance.web.Bus();
 
-/** OpenERP Translations */
-instance.web.TranslationDataBase = instance.web.Class.extend(/** @lends instance.web.TranslationDataBase# */{
-    /**
-     * @constructs instance.web.TranslationDataBase
-     * @extends instance.web.Class
-     */
-    init: function() {
-        this.db = {};
-        this.parameters = {"direction": 'ltr',
-                        "date_format": '%m/%d/%Y',
-                        "time_format": '%H:%M:%S',
-                        "grouping": [],
-                        "decimal_point": ".",
-                        "thousands_sep": ","};
-    },
-    set_bundle: function(translation_bundle) {
-        var self = this;
-        this.db = {};
-        var modules = _.keys(translation_bundle.modules);
-        modules.sort();
-        if (_.include(modules, "web")) {
-            modules = ["web"].concat(_.without(modules, "web"));
-        }
-        _.each(modules, function(name) {
-            self.add_module_translation(translation_bundle.modules[name]);
-        });
-        if (translation_bundle.lang_parameters) {
-            this.parameters = translation_bundle.lang_parameters;
-            this.parameters.grouping = py.eval(
-                    this.parameters.grouping);
-        }
-    },
-    add_module_translation: function(mod) {
-        var self = this;
-        _.each(mod.messages, function(message) {
-            self.db[message.id] = message.string;
-        });
-    },
-    build_translation_function: function() {
-        var self = this;
-        var fcnt = function(str) {
-            var tmp = self.get(str);
-            return tmp === undefined ? str : tmp;
-        };
-        fcnt.database = this;
-        return fcnt;
-    },
-    get: function(key) {
-        if (this.db[key])
-            return this.db[key];
-        return undefined;
-    }
-});
-
 /** Custom jQuery plugins */
 $.fn.getAttributes = function() {
     var o = {};
@@ -521,7 +467,7 @@ $.async_when = function() {
 instance.session = new instance.web.Session();
 
 /** Configure default qweb */
-instance.web._t = new instance.web.TranslationDataBase().build_translation_function();
+instance.web._t = function(s) {return s};
 /**
  * Lazy translation function, only performs the translation when actually
  * printed (e.g. inserted into a template)
@@ -575,30 +521,6 @@ instance.web.qweb.preprocess_node = function() {
 
 /** Setup jQuery timeago */
 var _t = instance.web._t;
-/*
- * Strings in timeago are "composed" with prefixes, words and suffixes. This
- * makes their detection by our translating system impossible. Use all literal
- * strings we're using with a translation mark here so the extractor can do its
- * job.
- */
-{
-    _t('less than a minute ago');
-    _t('about a minute ago');
-    _t('%d minutes ago');
-    _t('about an hour ago');
-    _t('%d hours ago');
-    _t('a day ago');
-    _t('%d days ago');
-    _t('about a month ago');
-    _t('%d months ago');
-    _t('about a year ago');
-    _t('%d years ago');
-}
-
-instance.session.on('module_loaded', this, function () {
-    // provide timeago.js with our own translator method
-    $.timeago.settings.translator = instance.web._t;
-});
 
 /** Setup blockui */
 if ($.blockUI) {
