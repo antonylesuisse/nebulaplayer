@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim:fdl=1:
+-->
+<templates id="template" xml:space="preserve">
+<t t-name="nebula.NebulaPlayer">
+    <div class="nebula">
+        
+    </div>
+</t>
+<t t-name="nebula.PlayList">
+    <div class="np_playlist">
+        <div class="np_search"/>
+        <table class="oe_list_content"/>
+    </div>
+</t>
+<t t-name="nebula.PlayList.table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th t-foreach="widget.columns" t-as="column">
+                <t t-esc="column"/>
+            </th>
+        </tr>
+    </thead>
+    <tbody class="oe_searchview" style="float: none">
+        <tr t-foreach="widget.records" t-as="record">
+            <td class="oe_searchview_facets">
+                <a href="#" class="np_playlist_play" t-att-data-id="record.name"><t t-esc="record.name"/></a>
+                <br/>
+                <div class="np_facet oe_tag oe_tag_dark oe_searchview_facet" tabindex="0" t-foreach="record" t-as="key" t-if="_.indexOf(widget.hidden, key) === -1">
+                    <span class="oe_facet_remove">x</span>
+                    <span class="oe_facet_category"><t t-esc="key"/></span>
+                    <span class="oe_facet_values">
+                        <span class="oe_facet_value"><t t-esc="key === 'size' ? widget.human_filesize(record[key]) : record[key]"/></span>
+                    </span>
+                </div>
+            </td>
+            <td t-foreach="widget.columns" t-as="column">
+                <t t-esc="record[column]"/>
+            </td>
+        </tr>
+    </tbody>
+</t>
+<t t-name="nebula.Search">
+    <div class="np_search">
+        
+    </div>
+</t>
+
+</templates>
