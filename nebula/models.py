@@ -39,7 +39,8 @@ CREATE TABLE "media_facet" (
     "value" text NOT NULL DEFAULT "",
     FOREIGN KEY ("media_id") REFERENCES "media" ("id")
 );
-INSERT INTO LOCATION (id,path) VALUES (null,'/home/wis/media');
+-- INSERT INTO LOCATION (id,path) VALUES (null,'/home/wis/uade_chip');
+INSERT INTO LOCATION (id,path) VALUES (null,'/home/wis/uade_chip/ahx/Jazz');
 COMMIT;
 """
 
@@ -72,15 +73,15 @@ class IndexLocation(object):
         print "index",root
         rpath = str(root.get('path'))
         if os.path.isdir(rpath):
+            db = DB(isolation=1)
             for root, dirs, files in os.walk(rpath):
-                db = DB(isolation=1)
                 for name in files:
                     url = os.path.join(root, name)
                     try:
                         db.media_insert(url, name)
                     except sqlite3.IntegrityError,e:
                         pass
-                db.orm.commit()
+            db.orm.commit()
             print "indexdone"
 
     def run(self):

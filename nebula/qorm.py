@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
+import logging
 import sqlite3
+
+_logger = logging.getLogger(__name__)
 
 class QOrm(object):
     def __init__(self,db,isolation=None):
@@ -41,14 +44,14 @@ class QOrm(object):
         else:
             param = kw
         if self.debug:
-            print q,param
+            _logger.debug(q,param)
         self.cursor.execute(q,param)
         r = []
         for row in self.cursor.fetchall():
             tmp = [(col[0],value) for (col, value) in zip(self.cursor.description, row)]
             r.append(dict(tmp))
         if self.debug:
-            print r
+            _logger.debug(r)
         return r
     def table(self,t):
         return QOrmTable(self,t)

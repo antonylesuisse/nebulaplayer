@@ -23,6 +23,8 @@ import werkzeug.utils
 import werkzeug.wrappers
 import werkzeug.wsgi
 
+import models
+
 _logger = logging.getLogger(__name__)
 
 #----------------------------------------------------------
@@ -84,10 +86,15 @@ class WebRequest(object):
 
     def init(self, params):
         self.params = dict(params)
+
+        self.db = models.DB()
+
         self.session = self.httpsession.get("session")
         if not self.session:
             self.httpsession["session"] = self.session = NebulaSession()
         self.session.config = self.config
+        self.session_id = self.params.pop('session_id', None)
+
         self.context = self.params.pop('context', None)
         self.debug = self.params.pop('debug', False) != False
 
@@ -161,9 +168,9 @@ class JsonRequest(WebRequest):
         try:
             # Read POST content or POST Form Data named "request"
             if requestf:
-                self.jsonrequest = simplejson.load(requestf, object_hook=nonliterals.non_literal_decoder)
+                self.jsonrequest = simplejson.load(requestf)
             else:
-                self.jsonrequest = simplejson.loads(request, object_hook=nonliterals.non_literal_decoder)
+                self.jsonrequest = simplejson.loads(request)
             self.init(self.jsonrequest.get("params", {}))
             if _logger.isEnabledFor(logging.DEBUG):
                 _logger.debug("--> %s.%s\n%s", controller.__class__.__name__, method.__name__, pprint.pformat(self.jsonrequest))
@@ -187,10 +194,10 @@ class JsonRequest(WebRequest):
 
         if jsonp:
             mime = 'application/javascript'
-            body = "%s(%s);" % (jsonp, simplejson.dumps(response, cls=nonliterals.NonLiteralEncoder),)
+            body = "%s(%s);" % (jsonp, simplejson.dumps(response))
         else:
             mime = 'application/json'
-            body = simplejson.dumps(response, cls=nonliterals.NonLiteralEncoder)
+            body = simplejson.dumps(response)
 
         r = werkzeug.wrappers.Response(body, headers=[('Content-Type', mime), ('Content-Length', len(body))])
         return r
@@ -349,36 +356,27 @@ class Root(object):
         request = werkzeug.wrappers.Request(environ)
         request.parameter_storage_class = werkzeug.datastructures.ImmutableDict
         request.app = self
-
         handler = self.find_handler(*(request.path.split('/')[1:]))
-
         if not handler:
             response = werkzeug.exceptions.NotFound()
         else:
-            # session
             session_store = werkzeug.contrib.sessions.FilesystemSessionStore(self.config.session_storage)
             sid = request.cookies.get("SID")
             if sid:
                 request.session = session_store.get(sid)
             else:
                 request.session = session_store.new()
-
             try:
                 result = handler( request, self.config)
-
                 if isinstance(result, basestring):
                     headers=[('Content-Type', 'text/html; charset=utf-8'), ('Content-Length', len(result))]
                     response = werkzeug.wrappers.Response(result, headers=headers)
                 else:
                     response = result
-
-                # session
                 if hasattr(response, 'set_cookie'):
                     response.set_cookie('SID', request.session.sid)
             finally:
-                # session
                 session_store.save(request.session)
-
         return response(environ, start_response)
 
     def _load_addons(self):

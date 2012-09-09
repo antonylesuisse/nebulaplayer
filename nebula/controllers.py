@@ -418,7 +418,7 @@ class Nebula(http.Controller):
         return module_installed(req)
 
     @http.jsonrequest
-    def load(self, req, path):
+    def proxy(self, req, path):
         """ Proxies an HTTP request through a JSON request.
 
         It is strongly recommended to not request binary files through this,
@@ -433,5 +433,18 @@ class Nebula(http.Controller):
 
         return Client(req.httprequest.app, BaseResponse).get(path).data
 
+    @http.jsonrequest
+    def playlist(self, req, playlist=0, search=0):
+        return req.db.playlist(playlist, search)
+
+    @http.httprequest
+    def stream(self, req, name=0, codec=0):
+        headers = [('Content-Type', 'application/octet-stream')]
+        headers = [('Content-Type', 'audio/mpeg')]
+        print  "Will read data", name
+        data = open(name).read()
+        response = req.make_response(data, headers)
+        print "RE",response
+        return response
 
 # vim:expandtab:tabstop=4:softtabstop=4:shiftwidth=4:

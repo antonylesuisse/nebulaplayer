@@ -53,7 +53,7 @@ instance.web.Session = instance.web.JsonRPC.extend( /** @lends instance.web.Sess
         this.session_id = this.get_cookie('session_id');
         return this.session_reload().pipe(function(result) {
             var modules = instance._modules.join(',');
-            var deferred = self.rpc('/web/webclient/qweblist', {mods: modules}).pipe(self.do_load_qweb);
+            var deferred = self.rpc('/nebula/qweblist', {mods: modules}).pipe(self.do_load_qweb);
             if(self.session_is_valid()) {
                 return deferred.pipe(function() { return self.load_modules(); });
             }
@@ -68,6 +68,7 @@ instance.web.Session = instance.web.JsonRPC.extend( /** @lends instance.web.Sess
      */
     session_reload: function () {
         var self = this;
+        return $.when();
         return this.rpc("/web/session/get_session_info", {}).then(function(result) {
             // If immediately follows a login (triggered by trying to restore
             // an invalid session or no session at all), refresh session data
@@ -174,9 +175,9 @@ instance.web.Session = instance.web.JsonRPC.extend( /** @lends instance.web.Sess
             var loaded = $.Deferred().resolve().promise();
             if (to_load.length) {
                 loaded = $.when(
-                    self.rpc('/web/webclient/csslist', {mods: to_load}, self.do_load_css),
-                    self.rpc('/web/webclient/qweblist', {mods: to_load}).pipe(self.do_load_qweb),
-                    self.rpc('/web/webclient/translations', params).pipe(function(trans) {
+                    self.rpc('/nebula/csslist', {mods: to_load}, self.do_load_css),
+                    self.rpc('/nebula/qweblist', {mods: to_load}).pipe(self.do_load_qweb),
+                    self.rpc('/nebula/translations', params).pipe(function(trans) {
                         instance.web._t.database.set_bundle(trans);
                         var file_list = ["/web/static/lib/datejs/globalization/" + lang.replace("_", "-") + ".js"];
                         return self.rpc('/web/webclient/jslist', {mods: to_load}).pipe(function(files) {
@@ -238,7 +239,7 @@ instance.web.Session = instance.web.JsonRPC.extend( /** @lends instance.web.Sess
         var self = this;
         _.each(files, function(file) {
             self.qweb_mutex.exec(function() {
-                return self.rpc('/web/proxy/load', {path: file}).pipe(function(xml) {
+                return self.rpc('/nebula/proxy', {path: file}).pipe(function(xml) {
                     if (!xml) { return; }
                     instance.web.qweb.add_template(_.str.trim(xml));
                 });

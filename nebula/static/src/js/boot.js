@@ -51,7 +51,7 @@
  * OpenERP Web web module split
  *---------------------------------------------------------*/
 openerp.web = function(session) {
-    var files = ["corelib","coresetup","formats","chrome","data","views","search"];
+    var files = ["corelib","coresetup","formats","chrome","data","views","search","nebula"];
     for(var i=0; i<files.length; i++) {
         if(openerp.web[files[i]]) {
             openerp.web[files[i]](session);

@@ -29,7 +29,8 @@
         "static/src/js/chrome.js",
         "static/src/js/views.js",
         "static/src/js/data.js",
-        "static/src/js/search.js"
+        "static/src/js/search.js",
+        "static/src/js/nebula.js"
     ],
     "css" : [
         "static/lib/jquery.ui.bootstrap/css/custom-theme/jquery-ui-1.8.16.custom.css",
@@ -37,7 +38,8 @@
         "static/lib/jquery.ui.notify/css/ui.notify.css",
         "static/lib/jquery.tipsy/tipsy.css",
         "static/lib/jquery.textext/jquery.textext.css",
-        "static/src/css/base.css"
+        "static/src/css/base.css",
+        "static/src/css/nebula.css"
     ],
     "qweb" : [
         "static/src/xml/*.xml"

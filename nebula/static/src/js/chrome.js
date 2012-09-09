@@ -1,7 +1,7 @@
 /*---------------------------------------------------------
  * OpenERP Web chrome
  *---------------------------------------------------------*/
-openerp.web.chrome = function(instance) {
+openerp.web.chrome = function(instance, nebula) {
 var QWeb = instance.web.qweb,
     _t = instance.web._t;
 
@@ -430,6 +430,9 @@ instance.web.Client = instance.web.Widget.extend({
     },
     start: function() {
         var self = this;
+
+        this.crashmanager =  new instance.web.CrashManager();
+        instance.session.on_rpc_error.add(this.crashmanager.on_rpc_error);
         return instance.session.session_bind(this.origin).pipe(function() {
             var $e = $(QWeb.render(self._template, {}));
             self.replaceElement($e);
@@ -472,8 +475,6 @@ instance.web.Client = instance.web.Widget.extend({
     },
     show_common: function() {
         var self = this;
-        this.crashmanager =  new instance.web.CrashManager();
-        instance.session.on_rpc_error.add(this.crashmanager.on_rpc_error);
         self.notification = new instance.web.Notification(this);
         self.notification.appendTo(self.$el);
         self.loading = new instance.web.Loading(self);
@@ -495,22 +496,21 @@ instance.web.WebClient = instance.web.Client.extend({
     start: function() {
         var self = this;
         console.log("Hello");
-
-        var player = Player.fromURL('http://localhost:8090/nebula/static/smp_dpintro.wav');
-        player.play();
-
         return $.when(this._super()).pipe(function() {
+
+            var n = new instance.web.NebulaPlayer(this);
+            n.appendTo(self.$el);
             if (jQuery.param !== undefined && jQuery.deparam(jQuery.param.querystring()).kitten !== undefined) {
                 $("body").addClass("kitten-mode-activated");
                 if ($.blockUI) {
                     $.blockUI.defaults.message = '<img src="http://www.amigrave.com/kitten.gif">';
                 }
             }
-            if (!self.session.session_is_valid()) {
-                self.show_login();
-            } else {
-                self.show_application();
-            }
+            //if (!self.session.session_is_valid()) {
+            //    self.show_login();
+            //} else {
+            //    self.show_application();
+            //}
         });
     },
     set_title: function(title) {
